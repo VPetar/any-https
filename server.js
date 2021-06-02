@@ -5,24 +5,12 @@ var ip = require("ip");
 var qrcode = require('qrcode-terminal');
 
 const port = 3031
-
-//
-// Create the proxy server listening on port 443
-//
-// httpProxy.createServer({
-//     ssl: {
-//       key: fs.readFileSync('./fake-keys/privatekey.pem', 'utf8'),
-//       cert: fs.readFileSync('./fake-keys/certificate.pem', 'utf8')
-//     },
-//     target: 'http://localhost:8081',
-//     secure: true, // Depends on your needs, could be false.
-//     // ws: true, 
-//   }).listen(3031);
+const portSource = 8081
 
 httpProxy.createServer({
   target: {
-    host: 'localhost',
-    port: 8081
+    host: ip.address(),
+    port: portSource
   },
   ssl: {
     key: fs.readFileSync('./fake-keys/privatekey.pem', 'utf8'),
@@ -30,5 +18,8 @@ httpProxy.createServer({
   }
 }).listen(port);
 
+console.log('Source, targeted for HTTPS conversion: http://' + ip.address() + ':' + portSource)
 console.log('Listening on https://' + ip.address() + ':' + port)
+console.log('Use this QR to access via mobile apps:')
+console.log('')
 qrcode.generate('https://' + ip.address() + ':' + port, {small: true})
